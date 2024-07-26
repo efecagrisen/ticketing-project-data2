@@ -61,8 +61,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteByUserName(String username) {
+
+        //soft deletion
+        User userToBeDeleted = userRepository.findByUserName(username);
+        userToBeDeleted.setDeleted(true);
+        userRepository.save(userToBeDeleted);
+
+        //hard deletion
 //        userRepository.deleteById(userRepository.findByUserName(username).getId());
-        userRepository.deleteByUserName(username); // a new derived query  created for deletion in userRepository
+//        userRepository.deleteByUserName(username); // a new derived query  created for deletion in userRepository
 
     }
 }

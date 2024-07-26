@@ -1,5 +1,5 @@
-INSERT INTO roles (description)
-VALUES ('Admin'),  ('Manager'),  ('Employee');
+INSERT INTO roles (is_deleted,description)
+VALUES (false,'Admin'),  (false,'Manager'),  (false,'Employee');
 
 
 

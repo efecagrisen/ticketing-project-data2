@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "projects")
-//@Where(clause = "is_deleted_false")
+@Where(clause = "is_deleted = false")
 public class Project extends BaseEntity{
 
     private String projectCode;

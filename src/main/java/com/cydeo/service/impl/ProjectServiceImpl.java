@@ -1,14 +1,11 @@
 package com.cydeo.service.impl;
 
 import com.cydeo.dto.ProjectDTO;
-import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Project;
-import com.cydeo.entity.Role;
 import com.cydeo.enums.Status;
 import com.cydeo.mapper.ProjectMapper;
 import com.cydeo.repository.ProjectRepository;
 import com.cydeo.service.ProjectService;
-import com.cydeo.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +24,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO getByProjectCode(String code) {
-        return null;
+        return projectMapper.convertToDto(projectRepository.findByProjectCode(code));
     }
 
 
@@ -48,12 +45,32 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void update(ProjectDTO projectDTO) {
-
+        Project projectToBeUpdated = projectRepository.findByProjectCode(projectDTO.getProjectCode());
+        Project convertedProject = projectMapper.convertToEntity(projectDTO);
+        convertedProject.setId(projectToBeUpdated.getId());
+        convertedProject.setProjectStatus(projectToBeUpdated.getProjectStatus());
+        projectRepository.save(convertedProject);
     }
 
     @Override
     public void delete(String code) {
 
     }
+
+    @Override
+    public void deleteByProjectCode(String projectCode) {
+        Project projectToBeDeleted = projectRepository.findByProjectCode(projectCode);
+        projectToBeDeleted.setDeleted(true);
+        projectRepository.save(projectToBeDeleted);
+    }
+
+    @Override
+    public void completeByProjectCode(String projectCode) {
+        Project project = projectRepository.findByProjectCode(projectCode);
+        project.setProjectStatus(Status.COMPLETE);
+        projectRepository.save(project);
+    }
+
+
 
 }

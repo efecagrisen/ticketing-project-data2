@@ -72,4 +72,15 @@ public class UserServiceImpl implements UserService {
 //        userRepository.deleteByUserName(username); // a new derived query  created for deletion in userRepository
 
     }
+
+    @Override
+    public List<UserDTO> findByRole(String role) {
+
+        List<User> userListByRole = userRepository.findByRoleDescriptionIgnoreCase(role);
+
+        return userListByRole.stream()
+                .map(userMapper::convertToDto)
+                .collect(Collectors.toList());
+
+    }
 }

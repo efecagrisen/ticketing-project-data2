@@ -1,6 +1,7 @@
 package com.cydeo.service.impl;
 
 import com.cydeo.dto.TaskDTO;
+import com.cydeo.entity.Project;
 import com.cydeo.entity.Task;
 import com.cydeo.enums.Status;
 import com.cydeo.mapper.MapperUtil;
@@ -29,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskDTO> listAllTasks() {
         return taskRepository.findAll()
                 .stream()
-                .map(entity-> mapperUtil.convertToDto(entity,TaskDTO.class))
+                .map(entity -> mapperUtil.convertToDto(entity, TaskDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task convertedTask = mapperUtil.convertToEntity(taskDTO, Task.class);
 
-        if (taskToBeUpdated.isPresent()){
+        if (taskToBeUpdated.isPresent()) {
             convertedTask.setTaskStatus(taskToBeUpdated.get().getTaskStatus());
             convertedTask.setAssignedDate(taskToBeUpdated.get().getAssignedDate());
             taskRepository.save(convertedTask);
@@ -56,21 +57,31 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void delete(Long id) {
         Optional<Task> taskToBeDeleted = taskRepository.findById(id);
-        if (taskToBeDeleted.isPresent()){
+        if (taskToBeDeleted.isPresent()) {
             taskToBeDeleted.get().setDeleted(true);
             taskRepository.save(taskToBeDeleted.get());
-            }
         }
+    }
 
     @Override
     public TaskDTO findById(Long id) {
 
         Optional<Task> task = taskRepository.findById(id);
-        if (task.isPresent()){
-            return mapperUtil.convertToDto(task,TaskDTO.class);
+        if (task.isPresent()) {
+            return mapperUtil.convertToDto(task, TaskDTO.class);
         }
         return null;
 
 //        return mapperUtil.convertToDto(taskRepository.findById(id).get(), TaskDTO.class);
+    }
+
+    @Override
+    public Integer totalNonCompletedTasks(String projectCode) {
+        return taskRepository.totalNonCompletedTasks(projectCode);
+    }
+
+    @Override
+    public Integer totalCompletedTasks(String projectCode) {
+        return taskRepository.totalCompletedTasks(projectCode);
     }
 }

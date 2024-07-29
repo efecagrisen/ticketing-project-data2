@@ -5,6 +5,8 @@ import com.cydeo.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface TaskRepository extends JpaRepository<Task,Long> {
 
 
@@ -20,6 +22,9 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
             "AND t.task_status = 'COMPLETE'"
             ,nativeQuery = true)
     Integer totalCompletedTasks(String projectCode);
+
+
+    List<Task> findAllByProject(Project project);
 
 
 }

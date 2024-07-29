@@ -12,7 +12,7 @@ public interface ProjectService {
     List<ProjectDTO> listAllProjects();
     void save(ProjectDTO projectDTO);
     void update( ProjectDTO projectDTO);
-    void delete(String code);
+
 
     void deleteByProjectCode(String projectCode);
 

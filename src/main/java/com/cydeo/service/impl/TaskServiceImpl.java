@@ -1,5 +1,6 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.dto.ProjectDTO;
 import com.cydeo.dto.TaskDTO;
 import com.cydeo.entity.Project;
 import com.cydeo.entity.Task;
@@ -83,5 +84,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Integer totalCompletedTasks(String projectCode) {
         return taskRepository.totalCompletedTasks(projectCode);
+    }
+
+    @Override
+    public void deleteByProject(ProjectDTO projectDTO) {
+        Project project = mapperUtil.convertToEntity(projectDTO, Project.class);
+        List<Task> tasks = taskRepository.findAllByProject(project);
     }
 }

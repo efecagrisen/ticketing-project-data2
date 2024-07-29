@@ -63,16 +63,18 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(convertedProject);
     }
 
-    @Override
-    public void delete(String code) {
 
-    }
 
     @Override
     public void deleteByProjectCode(String projectCode) {
         Project projectToBeDeleted = projectRepository.findByProjectCode(projectCode);
         projectToBeDeleted.setDeleted(true);
+
+        projectToBeDeleted.setProjectCode(projectToBeDeleted.getProjectCode()+"-"+projectToBeDeleted.getId());
+
         projectRepository.save(projectToBeDeleted);
+
+        taskService.deleteByProject(mapperUtil.convertToDto(projectToBeDeleted,ProjectDTO.class));
     }
 
     @Override

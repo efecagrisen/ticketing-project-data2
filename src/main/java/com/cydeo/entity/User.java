@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-@Where(clause = "is_deleted = false")
+//@Where(clause = "is_deleted = false") //when a user is deleted and a project is tried to be completed which has tasks of the already deleted user, it couldn't get the task as the assigned user is not found. so this where clause is commented to fix it
 public class User extends BaseEntity {
 
     private String firstName;

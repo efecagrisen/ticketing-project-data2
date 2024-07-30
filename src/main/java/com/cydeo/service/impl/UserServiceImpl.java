@@ -33,9 +33,11 @@ public class UserServiceImpl implements UserService {
         this.taskService = taskService;
     }
 
+    //@Where is commented in UserDto that's why IsDeleted(false) added in the repository methods.
+
     @Override
     public List<UserDTO> listAllUsers() {
-        return userRepository.findAll()
+        return userRepository.findAllByIsDeletedOrderByFirstNameDesc(false)
                 .stream()
                 .map(userMapper::convertToDto)
                 .collect(Collectors.toList());
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findByUserName(String username) {
-        return userMapper.convertToDto(userRepository.findByUserName(username));
+        return userMapper.convertToDto(userRepository.findByUserNameAndIsDeleted(username,false));
     }
 
     @Override
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO update(UserDTO user) {
         //find current user
-        User userToBeUpdated = userRepository.findByUserName(user.getUserName()); // has id
+        User userToBeUpdated = userRepository.findByUserNameAndIsDeleted(user.getUserName(),false); // has id
 
         //Map update user dto to entity object
         User convertedUser = userMapper.convertToEntity(user); // no id yet
@@ -74,11 +76,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByUserName(String username) {
 
-        User userToBeDeleted = userRepository.findByUserName(username);
+        User userToBeDeleted = userRepository.findByUserNameAndIsDeleted(username, false);
 
         if (checkIfUserBeDeleted(mapperUtil.convertToEntity(findByUserName(username), User.class))){
 
             userToBeDeleted.setDeleted(true);
+            userToBeDeleted.setUserName(userToBeDeleted.getUserName()+"-"+userToBeDeleted.getId());
             userRepository.save(userToBeDeleted);
         }
     }
@@ -86,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> findByRole(String role) {
 
-        List<User> userListByRole = userRepository.findByRoleDescriptionIgnoreCase(role);
+        List<User> userListByRole = userRepository.findByRoleDescriptionIgnoreCaseAndIsDeleted(role,false);
 
         return userListByRole.stream()
                 .map(userMapper::convertToDto)

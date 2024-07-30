@@ -1,9 +1,14 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.TaskDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.User;
+import com.cydeo.mapper.MapperUtil;
 import com.cydeo.mapper.UserMapper;
 import com.cydeo.repository.UserRepository;
+import com.cydeo.service.ProjectService;
+import com.cydeo.service.TaskService;
 import com.cydeo.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +20,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final MapperUtil mapperUtil;
+    private final ProjectService projectService;
+    private final TaskService taskService;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, MapperUtil mapperUtil, ProjectService projectService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.mapperUtil = mapperUtil;
+        this.projectService = projectService;
     }
 
     @Override
@@ -62,15 +72,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByUserName(String username) {
 
-        //soft deletion
         User userToBeDeleted = userRepository.findByUserName(username);
-        userToBeDeleted.setDeleted(true);
-        userRepository.save(userToBeDeleted);
 
-        //hard deletion
-//        userRepository.deleteById(userRepository.findByUserName(username).getId());
-//        userRepository.deleteByUserName(username); // a new derived query  created for deletion in userRepository
+        if (checkIfUserBeDeleted(mapperUtil.convertToEntity(findByUserName(username), User.class))){
 
+            userToBeDeleted.setDeleted(true);
+            userRepository.save(userToBeDeleted);
+        }
     }
 
     @Override
@@ -83,4 +91,23 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
 
     }
+
+    private boolean checkIfUserBeDeleted(User user){ //as it is private we can pass entity obj
+
+        switch (user.getRole().getDescription()){
+            case "Manager":
+                List<ProjectDTO> projectDTOList = projectService.listAllNonCompletedByAssignedManager(mapperUtil.convertToDto(user,UserDTO.class));
+                return  projectDTOList.size() == 0;
+            case "Employee":
+                List<TaskDTO> taskDTOList = taskService.listAllNonCompletedByAssignedEmployee(mapperUtil.convertToDto(user,UserDTO.class));
+                return  taskDTOList.size() == 0;
+            default:
+                return true;
+        }
+
+    }
+
+
+
+
 }

@@ -11,6 +11,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Project findByProjectCode(String code);
     List<Project> findAllByAssignedManager(User assignedManager);
+    List<Project> findAllByProjectStatusIsNotAndAssignedManager(Status status,User assignedManager);
+
 
 
 

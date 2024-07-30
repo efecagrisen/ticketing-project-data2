@@ -137,10 +137,21 @@ public class TaskServiceImpl implements TaskService {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    public void updateStatus(TaskDTO taskDTO) {
+//        Task taskToBeUpdated = mapperUtil.convertToEntity(taskDTO, Task.class);
+//        taskToBeUpdated.setTaskStatus(taskDTO.getTaskStatus());
+//        update(taskDTO);
+//    }
+
     @Override
-    public void updateStatus(TaskDTO taskDTO) {
-        Task taskToBeUpdated = mapperUtil.convertToEntity(taskDTO, Task.class);
-        taskToBeUpdated.setTaskStatus(taskDTO.getTaskStatus());
-        update(taskDTO);
+    public List<TaskDTO> listAllNonCompletedByAssignedEmployee(UserDTO assignedEmployee) {
+
+        List<Task> tasks = taskRepository.findAllByTaskStatusIsNotAndAndAssignedEmployee(Status.COMPLETE,mapperUtil.convertToEntity(assignedEmployee, User.class));
+
+
+        return tasks.stream()
+                .map(task-> mapperUtil.convertToDto(task, TaskDTO.class))
+                .collect(Collectors.toList());
     }
 }
